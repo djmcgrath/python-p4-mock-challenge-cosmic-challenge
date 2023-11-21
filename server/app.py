@@ -27,7 +27,7 @@ def home():
 
 class Scientists(Resource):
     def get(self):
-        scientist_list = [scientist.to_dict(rules = ("-missions", "-planets",)) for scientist in Scientist.query.all()]
+        scientist_list = [scientist.to_dict(rules = ("-missions",)) for scientist in Scientist.query.all()]
         return scientist_list, 200
     
     def post(self):
@@ -39,10 +39,12 @@ class Scientists(Resource):
             )
             db.session.add(new_scientist)
             db.session.commit()
+            return new_scientist.to_dict(rules = ("-missions",)), 201
+        
         except ValueError as e:
             print(e.__str__())
             return {"errors": ["validation errors"]}, 400
-        return new_scientist.to_dict(rules = ("-missions",)), 201
+        
     
 api.add_resource(Scientists, "/scientists")
 
@@ -63,11 +65,12 @@ class ScientistsById(Resource):
             for key in data:
                 setattr(scientist, key, data[key])
             db.session.commit()
+            return scientist.to_dict(rules = ("-missions",)), 202
         
         except ValueError as e:
             print(e.__str__())
             return {"errors": ["validation errors"]}, 400
-        return scientist.to_dict(rules = ("-missions",)), 202
+        
         
     def delete(self, id):
         scientist = Scientist.query.filter_by(id = id).first()
@@ -100,6 +103,7 @@ class Missions(Resource):
             db.session.add(new_mission)
             db.session.commit()
             return new_mission.to_dict(), 201
+        
         except ValueError as e:
             print(e.__str__())
             return {"errors": ["validation errors"]}, 400

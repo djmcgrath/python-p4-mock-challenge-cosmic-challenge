@@ -26,9 +26,9 @@ class Planet(db.Model, SerializerMixin):
     nearest_star = db.Column(db.String)
 
     # Add relationship
-    missions = db.relationship("Mission", back_populates = "planet", cascade = "all, delete")
+    missions = db.relationship("Mission", back_populates = "planet", cascade = "all, delete") #will say in the readme about whether the many class belongs to one or both classes
     # Add serialization rules
-    serialize_rules = ("-missions.planet","-scientist.planet",)
+    serialize_rules = ("-missions.planet",)
 
 class Scientist(db.Model, SerializerMixin):
     __tablename__ = 'scientists'
@@ -38,9 +38,9 @@ class Scientist(db.Model, SerializerMixin):
     field_of_study = db.Column(db.String)
 
     # Add relationship
-    missions = db.relationship("Mission", back_populates = "scientist", cascade = "all, delete")
+    missions = db.relationship("Mission", back_populates = "scientist", cascade = "all, delete") #will say in the readme about whether the many class belongs to one or both classes
     # Add serialization rules
-    serialize_rules = ("-missions.scientist","-planets.scientist",)
+    serialize_rules = ("-missions.scientist",)
     # Add validation
     @validates("name")
     def validate_name (self, key, name):
@@ -53,6 +53,12 @@ class Scientist(db.Model, SerializerMixin):
         if not field:
             raise ValueError("Must have a field of study")
         return field
+    
+    # @validates("field_of_study", "name")
+    # def validate_field_of_study (self, key, value):
+    #     if not value:
+    #         raise ValueError(f'{value} must be present')
+    #     return value
 
 class Mission(db.Model, SerializerMixin):
     __tablename__ = 'missions'
@@ -86,5 +92,12 @@ class Mission(db.Model, SerializerMixin):
             raise ValueError("Must have a planet id")
         return planet
 
+    #simplier way to do it if they are asking for the same thing
+
+    # @validates("planet_id", "scientist_id", "name")
+    # def validate_planet_id (self, key, value):
+    #     if not value:
+    #         raise ValueError(f'{key} must have a value')
+    #     return value
 
 # add any models you may need.
